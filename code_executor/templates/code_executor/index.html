@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Language IDE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="ide-container">
+        <div class="header">
+            <h1>C Language IDE</h1>
+            <div class="header-controls">
+                <button class="help-btn" onclick="toggleHelp()">Examples</button>
+                <button class="help-btn" onclick="testEditor()" style="margin-right: 10px;">Test Editor</button>
+                <button class="help-btn" onclick="testInputSection()" style="margin-right: 10px;">Test Input</button>
+                <button class="run-btn" id="runBtn" onclick="runCode()">▶ Compile & Run</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="editor-panel">
+                <div class="editor-header">
+                    main.c
+                </div>
+                <textarea id="code-editor" placeholder="Type your C code here..."></textarea>
+            </div>
+
+            <div class="output-panel">
+                <div class="output-header">
+                    <span>Output</span>
+                    <button class="clear-output" onclick="clearOutput()">Clear</button>
+                </div>
+                <div class="output-content" id="output-content">
+                    Welcome to C Language IDE! Write your code and click Compile & Run to execute it.
+                </div>
+                <div class="input-section" id="input-section" style="display: none;">
+                    <div class="input-header">
+                        <span>Program Input</span>
+                        <button class="send-input" onclick="sendInput()">Send Input</button>
+                    </div>
+                    <textarea id="program-input" placeholder="Enter input for your program (e.g., numbers, text)..."></textarea>
+                </div>
+            </div>
+
+            <div class="explanation-panel">
+                <div class="explanation-tabs">
+                    <button class="explanation-tab active" onclick="switchTab('code-explanation')">Code Explanation</button>
+                    <button class="explanation-tab" onclick="switchTab('error-explanation')">Error Explanation</button>
+                </div>
+                
+                <div class="explanation-content active" id="code-explanation-content">
+                    <div class="code-explanation">
+                        <h3>Code Analysis</h3>
+                        <p>Your code will be analyzed here after execution. The explanation will include:</p>
+                        <ul>
+                            <li><span class="keyword">Header Files</span> and includes</li>
+                            <li><span class="function">Functions</span> and their purpose</li>
+                            <li><span class="string">Variables</span> and data types</li>
+                            <li><span class="comment">Comments</span> and code structure</li>
+                        </ul>
+                        <p>Run your code to see a detailed explanation of what each part does.</p>
+                    </div>
+                </div>
+                
+                <div class="explanation-content" id="error-explanation-content">
+                    <div class="error-explanation">
+                        <h3>Error Analysis</h3>
+                        <p>When errors occur, they will be explained here with:</p>
+                        <div class="error-type">
+                            <strong>Error Type:</strong> Syntax, Runtime, or Logic errors
+                        </div>
+                        <div class="suggestion">
+                            <strong>Suggestion:</strong> How to fix the error
+                        </div>
+                        <p>Errors will be categorized and explained with helpful suggestions for fixing them.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <span id="status-text">Ready</span>
+                </div>
+                <div class="status-item" id="loading-indicator" style="display: none;">
+                    <div class="loading"></div>
+                    <span>Running...</span>
+                </div>
+            </div>
+            <div class="status-item">
+                <span id="line-info">Line 1, Column 1</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="example-functions" id="helpPanel">
+        <h3>C Language Examples</h3>
+        <pre>#include &lt;stdio.h&gt;
+
+int main() {
+    printf("Hello, World!\\n");
+    return 0;
+}</pre>
+        
+        <pre># Function Definition
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    int result = add(5, 3);
+    printf("Result: %d\\n", result);
+    return 0;
+}</pre>
+        
+        <pre># Conditional Statement
+int main() {
+    int x = 10;
+    if (x > 5) {
+        printf("x is greater than 5\\n");
+    } else {
+        printf("x is not greater than 5\\n");
+    }
+    return 0;
+}</pre>
+        
+        <pre># Loop Example
+int main() {
+    for (int i = 0; i < 5; i++) {
+        printf("%d\\n", i);
+    }
+    return 0;
+}</pre>
+        
+        <pre># Array Operations
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int sum = 0;
+    for (int i = 0; i < 5; i++) {
+        sum += arr[i];
+    }
+    printf("Sum: %d\\n", sum);
+    return 0;
+}</pre>
+        
+        <pre># Non-Interactive Input (Works in IDE)
+int main() {
+    int num1 = 10;  // Hardcoded values
+    int num2 = 20;
+    int sum = num1 + num2;
+    printf("Sum = %d\\n", sum);
+    return 0;
+}</pre>
+        
+        <pre># Interactive Input (Now Supported!)
+int main() {
+    int num1, num2, sum;
+    printf("Enter first number: ");
+    scanf("%d", &num1);
+    printf("Enter second number: ");
+    scanf("%d", &num2);
+    sum = num1 + num2;
+    printf("Sum = %d\\n", sum);
+    return 0;
+}
+
+// Input: Enter two numbers on separate lines
+// Example: 10
+//          20</pre>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/trailingspace.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/selection/active-line.min.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
