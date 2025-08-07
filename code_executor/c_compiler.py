@@ -31,7 +31,10 @@ class CCompiler:
             result['analysis'] = analysis
             
             # Check if program requires interactive input
-            if self._detect_interactive_input(source_code):
+            interactive_detected = self._detect_interactive_input(source_code)
+            print(f"Interactive input detected: {interactive_detected}")
+            
+            if interactive_detected:
                 if not program_input:
                     # First run - show input prompt
                     result['output'] = "🔵 INTERACTIVE PROGRAM DETECTED\n\n"
@@ -44,6 +47,7 @@ class CCompiler:
                     result['output'] += "Enter your input and click 'Send Input' to run the program."
                     result['success'] = True
                     result['requires_input'] = True
+                    print(f"Setting requires_input to True")
                     return result
                 else:
                     # Second run - execute with input

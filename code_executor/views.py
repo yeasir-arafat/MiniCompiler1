@@ -33,12 +33,20 @@ def execute_code(request):
             
             if result['success']:
                 # Compilation and execution successful
-                return JsonResponse({
+                response_data = {
                     'success': True,
                     'output': result['output'],
                     'error': '',
                     'analysis': result['analysis']
-                })
+                }
+                # Include requires_input field if it exists
+                if 'requires_input' in result:
+                    response_data['requires_input'] = result['requires_input']
+                    print(f"Backend: requires_input = {result['requires_input']}")
+                else:
+                    print(f"Backend: requires_input not found in result")
+                print(f"Backend: sending response_data = {response_data}")
+                return JsonResponse(response_data)
             else:
                 # Compilation failed
                 return JsonResponse({
